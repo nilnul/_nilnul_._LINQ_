@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{442CBE25-6F12-44A1-8958-90E14F80F2D4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>_nilnul_._LINQ_</RootNamespace>
+    <AssemblyName>_nilnul_._LINQ_</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Symbols4Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Symbols4Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Cfg.cs" />
+    <Compile Include="cfg\connTxt_\Default.cs" />
+    <Compile Include="cfg\connTxt_\initial\Pass.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\SettingsX.cs" />
+    <Compile Include="_cfg_\connTxt_\Default.cs" />
+    <Compile Include="_cfg_\connTxt_\_ini_\Pass.cs" />
+    <Compile Include="_cfg_\db\Cache.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="PostBuildMacros">
+    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+      <Output TaskParameter="Assemblies" ItemName="Targets" />
+    </GetAssemblyIdentity>
+    <ItemGroup>
+      <VersionNumber Include="@(Targets->'%(Version)')" />
+    </ItemGroup>
+  </Target>
+  <PropertyGroup>
+    <PostBuildEventDependsOn>
+			$(PostBuildEventDependsOn);
+			PostBuildMacros;
+		</PostBuildEventDependsOn>
+    <PostBuildEvent>
+			if $(ConfigurationName) == Release (
+			if NOT "$(SolutionDir)" == "$(MSBuildProjectDirectory)\" (
+			xcopy /Y /E /D /I "$(SolutionDir)\packages\*.*" "$(MSBuildProjectDirectory)\packages\"
+			)
+			"NuGet.exe" pack "$(ProjectPath)"  -Prop Configuration=$(ConfigurationName) -Exclude **/*.tt
+			rem "NuGet.exe" push $(TargetName).@(VersionNumber).nupkg -Source local
+			rem "NuGet.exe" push $(TargetName).@(VersionNumber).nupkg -Source my
+			) ELSE (
+			if $(ConfigurationName) == Symbols4Debug (
+			if NOT "$(SolutionDir)" == "$(MSBuildProjectDirectory)\" (
+			xcopy /Y /E /D /I "$(SolutionDir)\packages\*.*" "$(MSBuildProjectDirectory)\packages\"
+			)
+			"NuGet.exe" pack "$(ProjectPath)" -Symbols -Prop Configuration=$(ConfigurationName) -Exclude **/*.tt
+			"NuGet.exe" push $(TargetName).@(VersionNumber).symbols.nupkg -Source local
+			"NuGet.exe" push $(TargetName).@(VersionNumber).symbols.nupkg -Source my
+			) ELSE (
+			echo $(VersionNumber)
+			)
+			)
+
+			rem "NuGet.exe" pack "$(ProjectPath)" -Prop Configuration=$(ConfigurationName) -Symbol -OutputDirectory ..\..
+
+			rem del $(ProjectDir)bin\$(ConfigurationName) \*.nupkg
+
+			rem forfiles /P $(ProjectDir)bin\$(ConfigurationName)\ /m *.nupkg /c "cmd /c "NuGet.exe" push @FILE -Source local"
+			rem forfiles /P $(ProjectDir)bin\$(ConfigurationName)\ /m *.nupkg /c "cmd /c "NuGet.exe" push @FILE -Source wyt"
+		</PostBuildEvent>
+  </PropertyGroup>
+</Project>
