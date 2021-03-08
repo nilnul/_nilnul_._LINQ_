@@ -3,7 +3,7 @@ name: MSBuild
 on: 
   push:
     branches:
-      - pub-pac
+      - 'pub-pac'
 
 env:
   # Path to the solution file relative to the root of the project.
