@@ -14,6 +14,10 @@ namespace _nilnul_._LINQ_
 		/// <summary>
 		/// in web app, the web.config shall include, by "configSource" when appropriate, an entry named such.
 		/// </summary>
+		/// <remarks>
+		/// </remarks>
+		/// alias:
+		///		default
 		public const string NAME = "db";
 	}
 }
