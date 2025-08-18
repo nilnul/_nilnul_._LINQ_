@@ -347,3 +347,6 @@ MigrationBackup/
 *([Gg]it/
 .*/
 *.skb
+
+.*
+!.gitignore
